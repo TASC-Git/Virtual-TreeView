@@ -509,6 +509,8 @@ type
     property OnDragDrop;
     property OnDrawHint;
     property OnDrawText;
+    property OnDrawGridHLine; // DQ change
+    property OnDrawGridVLine; // DQ change
     property OnEditCancelled;
     property OnEdited;
     property OnEditing;

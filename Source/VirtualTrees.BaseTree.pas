@@ -350,6 +350,9 @@ type
   TVTGetCellIsEmptyEvent = procedure(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
     var IsEmpty: Boolean) of object;
   TVTScrollBarShowEvent = procedure(Sender: TBaseVirtualTree; Bar: Integer; Show: Boolean) of object;
+  // DQ Change
+  TVTDrawGridHLineEvent = procedure(const PaintInfo: TVTPaintInfo; Left, Right, Top: TDimension) of object;
+  TVTDrawGridVLineEvent = procedure (const PaintInfo: TVTPaintInfo; Top, Bottom, Left: TDimension; pFixedColumn: Boolean = False) of object;
 
   // Helper types for node iterations.
   TGetFirstNodeProc = function: PVirtualNode of object;
@@ -704,6 +707,9 @@ type
     FOnBeforeGetCheckState: TVTBeforeGetCheckStateEvent; // Called before a CheckState for a Node is obtained.
                                                          // Gives the application a chance to do special processing
                                                          // when a check state is actually required for the first time.
+    // DQ Change
+    FOnDrawGridHLine: TVTDrawGridHLineEvent; // Drawing the Horizontal line uses styles when this may not be desired so this event can override
+    FOnDrawGridVLine: TVTDrawGridVLineEvent; // Same applies to vertical
 
     // search, sort
     FOnCompareNodes: TVTCompareEvent;            // used during sort
@@ -1067,6 +1073,10 @@ type
     procedure DrawDottedVLine(const PaintInfo: TVTPaintInfo; Top, Bottom, Left: TDimension); virtual;
     procedure DrawGridHLine(const PaintInfo: TVTPaintInfo; Left, Right, Top: TDimension); virtual;
     procedure DrawGridVLine(const PaintInfo: TVTPaintInfo; Top, Bottom, Left: TDimension; pFixedColumn: Boolean = False); virtual;
+    // DQ change
+    procedure DoDrawGridHLine(const PaintInfo: TVTPaintInfo; Left, Right, Top: TDimension);
+    procedure DoDrawGridVLine(const PaintInfo: TVTPaintInfo; Top, Bottom, Left: TDimension; pFixedColumn: Boolean = False);
+
     procedure EndOperation(OperationKind: TVTOperationKind);
     procedure EnsureNodeFocused(); virtual;
     function FindNodeInSelection(P: PVirtualNode; var Index: Integer; LowBound, HighBound: Integer): Boolean; virtual;
@@ -1297,6 +1307,10 @@ type
     property OnCreateDataObject: TVTCreateDataObjectEvent read FOnCreateDataObject write FOnCreateDataObject;
     property OnCreateDragManager: TVTCreateDragManagerEvent read FOnCreateDragManager write FOnCreateDragManager;
     property OnCreateEditor: TVTCreateEditorEvent read FOnCreateEditor write FOnCreateEditor;
+    // DQ Change
+    property OnDrawGridHLine: TVTDrawGridHLineEvent read FOnDrawGridHLine write FOnDrawGridHLine;
+    property OnDrawGridVLine: TVTDrawGridVLineEvent read FOnDrawGridVLine write FOnDrawGridVLine;
+
     property OnDragAllowed: TVTDragAllowedEvent read FOnDragAllowed write FOnDragAllowed;
     property OnDragOver: TVTDragOverEvent read FOnDragOver write FOnDragOver;
     property OnDragDrop: TVTDragDropEvent read FOnDragDrop write FOnDragDrop;
@@ -20614,15 +20628,15 @@ begin
                             begin
                               if BidiMode = bdLeftToRight then
                               begin
-                                DrawGridHLine(PaintInfo, CellRect.Left + PaintInfo.Offsets[ofsCheckBox] - fImagesMargin, CellRect.Right - 1, CellRect.Bottom - 1);
+                                DoDrawGridHLine(PaintInfo, CellRect.Left + PaintInfo.Offsets[ofsCheckBox] - fImagesMargin, CellRect.Right - 1, CellRect.Bottom - 1);
                               end
                               else
                               begin
-                                DrawGridHLine(PaintInfo, CellRect.Left, CellRect.Right - IfThen(toFixedIndent in FOptions.PaintOptions, 1, IndentSize) * FIndent - 1, CellRect.Bottom - 1);
+                                DoDrawGridHLine(PaintInfo, CellRect.Left, CellRect.Right - IfThen(toFixedIndent in FOptions.PaintOptions, 1, IndentSize) * FIndent - 1, CellRect.Bottom - 1);
                               end;
                             end
                             else
-                              DrawGridHLine(PaintInfo, CellRect.Left, CellRect.Right, CellRect.Bottom - 1);
+                              DoDrawGridHLine(PaintInfo, CellRect.Left, CellRect.Right, CellRect.Bottom - 1);
 
                             Dec(CellRect.Bottom);
                             Dec(ContentRect.Bottom);
@@ -20652,7 +20666,7 @@ begin
                                 begin
                                   if (BidiMode = bdLeftToRight) or not ColumnIsEmpty(Node, Column) then
                                   begin
-                                    DrawGridVLine(PaintInfo, CellRect.Top, CellRect.Bottom, CellRect.Right - 1, ColumnIsFixed and (NextColumn >= 0));
+                                    DoDrawGridVLine(PaintInfo, CellRect.Top, CellRect.Bottom, CellRect.Right - 1, ColumnIsFixed and (NextColumn >= 0));
                                   end;
 
                                   Dec(CellRect.Right);
@@ -20668,7 +20682,7 @@ begin
                                 begin
                                   if (BidiMode = bdLeftToRight) or not ColumnIsEmpty(Node, Column) then
                                   begin
-                                    DrawGridVLine(PaintInfo, CellRect.Top, CellRect.Bottom, CellRect.Right - 1, ColumnIsFixed and (NextColumn >= 0));
+                                    DoDrawGridVLine(PaintInfo, CellRect.Top, CellRect.Bottom, CellRect.Right - 1, ColumnIsFixed and (NextColumn >= 0));
                                   end;
                                   Dec(CellRect.Right);
                                 end;
@@ -20861,7 +20875,7 @@ begin
                          (toShowVertGridLines in FOptions.PaintOptions) and
                          (not (hoAutoResize in FHeader.Options) or (Cardinal(FirstColumn) < TColumnPosition(Count - 1))) then
                       begin
-                        DrawGridVLine(PaintInfo, R.Top, R.Bottom, R.Right - 1);
+                        DoDrawGridVLine(PaintInfo, R.Top, R.Bottom, R.Right - 1);
                         Dec(R.Right);
                       end;
 
@@ -21250,6 +21264,24 @@ begin
 end;
 
 //----------------- TBaseVirtualTree -----------------------------------------------------------------------------
+
+procedure TBaseVirtualTree.DoDrawGridHLine(const PaintInfo: TVTPaintInfo;
+  Left, Right, Top: TDimension);
+begin
+   if Assigned(FOnDrawGridHLine) then
+      FOnDrawGridHLine(PaintInfo, Left, Right, Top)
+   else
+      DrawGridHLine(PaintInfo, Left, Right, Top);
+end;
+
+procedure TBaseVirtualTree.DoDrawGridVLine(const PaintInfo: TVTPaintInfo;
+  Top, Bottom, Left: TDimension; pFixedColumn: Boolean);
+begin
+   if Assigned(FOnDrawGridVLine) then
+      FOnDrawGridVLine(PaintInfo, Top, Bottom, Left, pFixedColumn)
+   else
+      DrawGridVLine(PaintInfo, Top, Bottom, Left, pFixedColumn);
+end;
 
 procedure TBaseVirtualTree.DoDrawHint(Canvas: TCanvas; Node: PVirtualNode; R:
     TRect; Column: TColumnIndex);

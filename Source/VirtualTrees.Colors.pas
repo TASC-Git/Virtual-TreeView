@@ -144,6 +144,10 @@ begin
   //Return default/user defined color otherwise
   if not (csDesigning in TreeView.ComponentState) { see issue #1185 } and TreeView.VclStyleEnabled then
   begin
+   // DQ Changed - Just use provided color rather than Style Services
+   Result := FColors[Index];
+   exit;
+
     //If the ElementDetails are not defined, fall back to the SystemColor
     case Index of
       cDisabledColor :
@@ -165,7 +169,8 @@ begin
           Result := StyleServices.GetSystemColor(FColors[Index]);
       cSelectionTextColor :
         if not StyleServices.GetElementColor(StyleServices.GetElementDetails(ttItemSelected), ecTextColor, Result) then
-          Result := StyleServices.GetSystemColor(clHighlightText);
+          Result := StyleServices.GetSystemColor(FColors[Index]);
+//          Result := StyleServices.GetSystemColor(clHighlightText); // Change by DQ to use the Selected Text Color as defined in .colors
       cUnfocusedColor :
         if not StyleServices.GetElementColor(StyleServices.GetElementDetails(ttItemSelectedNotFocus), ecTextColor, Result) then
           Result := StyleServices.GetSystemColor(FColors[Index]);
