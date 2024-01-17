@@ -10,11 +10,9 @@ object FormModelView: TFormModelView
   Font.Height = -11
   Font.Name = 'Segoe UI'
   Font.Style = []
-  OldCreateOrder = False
   Position = poScreenCenter
   ShowHint = True
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
     Left = 520
@@ -72,6 +70,8 @@ object FormModelView: TFormModelView
     Images = ImageList1
     ParentFont = False
     TabOrder = 2
+    Touch.InteractiveGestures = [igPan, igPressAndTap]
+    Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
     Columns = <>
   end
   object ImageList1: TImageList
@@ -80,7 +80,7 @@ object FormModelView: TFormModelView
     Left = 16
     Top = 376
     Bitmap = {
-      494C01011B003000480018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01011B003000040018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000060000000A8000000010020000000000000FC
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000C4C4C4009996970099969700D1D1
