@@ -16,7 +16,9 @@ uses
    VirtualTrees.EditLink;
 
 type
-
+   /// <summary> These can be removed once all edittree references are removed
+   ///           The TComboEditLink is required
+   /// </summary>
    TCustomVirtualEditTree = class(TVirtualStringTree)
 
    end;
