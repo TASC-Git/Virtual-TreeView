@@ -1523,6 +1523,9 @@ type
     function GetTreeRect: TRect;
     function GetVisibleParent(Node: PVirtualNode; IncludeFiltered: Boolean = False): PVirtualNode;
     function HasAsParent(Node, PotentialParent: PVirtualNode): Boolean;
+    // DQ Change
+    property ImagesMargin: TDimension read FImagesMargin write FImagesMargin;
+
     function InsertNode(Node: PVirtualNode; Mode: TVTNodeAttachMode; UserData: Pointer = nil): PVirtualNode;
     procedure InvalidateChildren(Node: PVirtualNode; Recursive: Boolean);
     procedure InvalidateColumn(Column: TColumnIndex);

@@ -13,7 +13,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, VirtualTrees, ImgList, ComCtrls, ToolWin, Menus, StdCtrls, UITypes,
-  System.ImageList, VirtualTrees.Types;
+  System.ImageList, VirtualTrees.Types, VirtualTrees.BaseAncestorVCL,
+  VirtualTrees.BaseTree, VirtualTrees.AncestorVCL;
 
 type
   TWindowsXPForm = class(TForm)

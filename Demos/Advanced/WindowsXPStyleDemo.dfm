@@ -9,12 +9,10 @@ object WindowsXPForm: TWindowsXPForm
   Font.Height = -13
   Font.Name = 'Microsoft Sans Serif'
   Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
   DesignSize = (
     796
     487)
-  PixelsPerInch = 96
   TextHeight = 16
   object Label1: TLabel
     Left = 512
