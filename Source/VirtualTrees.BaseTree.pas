@@ -20963,7 +20963,9 @@ begin
         R.Right := R.Left + Width - lEmptyListTextMargin;
         R.Bottom := Height - lEmptyListTextMargin;
         TargetCanvas.Font.Color := StyleServices.GetStyleFontColor(TStyleFont.sfTreeItemTextDisabled);//clGrayText;
-        TargetCanvas.TextRect(R, FEmptyListMessage, [tfNoClip, tfLeft, tfWordBreak, tfExpandTabs]);
+        // DQ changed
+        TargetCanvas.TextRect(R, FEmptyListMessage, [tfNoClip, tfCenter, tfWordBreak, tfExpandTabs]);
+//        TargetCanvas.TextRect(R, FEmptyListMessage, [tfNoClip, tfLeft, tfWordBreak, tfExpandTabs]);
       end;
 
       DoAfterPaint(TargetCanvas);
