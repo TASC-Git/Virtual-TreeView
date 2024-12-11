@@ -61,7 +61,7 @@ function TfmMVCDemo.CreateDefaultTree:TMVCTree;
 var i,j,k:integer;
 begin
   Result:=TMVCTree.Create;
-  for i:=0 to 2 do
+  for i:=0 to 200 do
     with Result.Root.CreateChild do
       begin
         Caption:='Root';

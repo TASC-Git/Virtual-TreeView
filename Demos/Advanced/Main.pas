@@ -91,7 +91,7 @@ procedure LoadUnicodeStrings(Name: string; var Strings: array of UnicodeString);
 
 var
   Stream: TResourceStream;
-  Head, Tail: PWideChar;
+  Head, Tail, First: PWideChar;
   I: Integer;
 
 begin
@@ -101,6 +101,7 @@ begin
     // Skip byte order mark.
     Inc(Head);
     Tail := Head;
+    First := Head;
     for I := 0 to High(Strings) do
     begin
       Head := Tail;
@@ -109,6 +110,8 @@ begin
       SetString(Strings[I], Head, Tail - Head);
       // Skip carriage return and linefeed.
       Inc(Tail, 2);
+      if Tail^ = #0 then
+         Tail := First;
     end;
   finally
     Stream.Free;

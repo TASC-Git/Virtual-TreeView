@@ -12,12 +12,15 @@ program MVCDemo;
 uses
   Forms,
   MVCDemoMain in 'MVCDemoMain.pas' {fmMVCDemo},
-  MVCPanel in 'MVCPanel.pas';
+  MVCPanel in 'MVCPanel.pas',
+  Vcl.Themes,
+  Vcl.Styles;
 
 {$R *.RES}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TfmMVCDemo,fmMVCDemo);
+  TStyleManager.TrySetStyle('Windows11 Modern Dark');
+  Application.CreateForm(TfmMVCDemo, fmMVCDemo);
   Application.Run;
 end.

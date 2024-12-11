@@ -16,13 +16,16 @@ uses
   WindowsXPStyleDemo in 'WindowsXPStyleDemo.pas' {WindowsXPForm},
   MultilineDemo in 'MultilineDemo.pas' {NodeForm},
   HeaderCustomDrawDemo in 'HeaderCustomDrawDemo.pas' {HeaderOwnerDrawForm},
-  States in 'States.pas' {StateForm};
+  States in 'States.pas' {StateForm},
+  Vcl.Themes,
+  Vcl.Styles;
 
 {$R *.RES}
 
 begin
   ReportMemoryLeaksOnShutdown := True;
   Application.Initialize;
+  TStyleManager.TrySetStyle('Windows11 Modern Dark');
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TStateForm, StateForm);
   Application.Run;

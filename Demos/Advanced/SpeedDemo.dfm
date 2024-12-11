@@ -9,12 +9,10 @@ object SpeedForm: TSpeedForm
   Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Visible = True
   DesignSize = (
     550
     539)
-  PixelsPerInch = 96
   TextHeight = 16
   object Label1: TLabel
     Left = 7
@@ -1555,7 +1553,9 @@ object SpeedForm: TSpeedForm
     BiDiMode = bdLeftToRight
     Colors.BorderColor = clWindowText
     Colors.HotColor = clBlack
+    DefaultNodeHeight = 20
     Header.AutoSizeIndex = -1
+    Header.Height = 16
     Header.MainColumn = -1
     Header.Options = [hoColumnResize, hoDrag, hoHotTrack]
     IncrementalSearch = isAll
@@ -1566,11 +1566,14 @@ object SpeedForm: TSpeedForm
     TabOrder = 0
     TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
+    TreeOptions.PaintOptions = [toHotTrack, toShowDropmark, toShowRoot, toShowTreeLines, toThemeAware, toFullVertGridLines]
     TreeOptions.SelectionOptions = [toMultiSelect]
     OnChange = VST1Change
     OnGetText = VST1GetText
     OnStateChange = VST1StateChange
     OnStructureChange = VST1StructureChange
+    Touch.InteractiveGestures = [igPan, igPressAndTap]
+    Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
     Columns = <>
   end
   object GroupBox2: TGroupBox

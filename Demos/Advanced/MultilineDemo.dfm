@@ -10,12 +10,10 @@ object NodeForm: TNodeForm
   Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
   DesignSize = (
     757
     504)
-  PixelsPerInch = 96
   TextHeight = 16
   object Label8: TLabel
     Left = 12
@@ -50,7 +48,7 @@ object NodeForm: TNodeForm
       357)
     object MLTree: TVirtualStringTree
       Left = 96
-      Top = 8
+      Top = 16
       Width = 533
       Height = 337
       Anchors = [akLeft, akTop, akRight, akBottom]
@@ -67,13 +65,8 @@ object NodeForm: TNodeForm
       DefaultNodeHeight = 130
       DragMode = dmAutomatic
       Header.AutoSizeIndex = 0
-      Header.Font.Charset = DEFAULT_CHARSET
-      Header.Font.Color = clWindowText
-      Header.Font.Height = -11
-      Header.Font.Name = 'Tahoma'
-      Header.Font.Style = []
+      Header.Height = 13
       Header.Options = [hoAutoResize, hoColumnResize, hoDrag]
-      HintAnimation = hatNone
       HintMode = hmTooltip
       LineMode = lmBands
       NodeAlignment = naFromTop
@@ -94,6 +87,8 @@ object NodeForm: TNodeForm
       OnInitNode = MLTreeInitNode
       OnMeasureItem = MLTreeMeasureItem
       OnStateChange = MLTreeStateChange
+      Touch.InteractiveGestures = [igPan, igPressAndTap]
+      Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
       Columns = <
         item
           Position = 1
