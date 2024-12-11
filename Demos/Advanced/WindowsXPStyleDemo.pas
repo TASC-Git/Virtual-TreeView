@@ -13,8 +13,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, VirtualTrees, ImgList, ComCtrls, ToolWin, Menus, StdCtrls, UITypes,
-  System.ImageList, VirtualTrees.Types, VirtualTrees.BaseAncestorVCL,
-  VirtualTrees.BaseTree, VirtualTrees.AncestorVCL;
+  System.ImageList, VirtualTrees.Types, Vcl.ExtCtrls,
+  VirtualTrees.BaseAncestorVCL, VirtualTrees.BaseTree, VirtualTrees.AncestorVCL;
 
 type
   TWindowsXPForm = class(TForm)
@@ -33,6 +33,7 @@ type
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
     PrintDialog: TPrintDialog;
+    Panel1: TPanel;
     procedure XPTreeGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
       Column: TColumnIndex; var Ghosted: Boolean; var Index: TImageIndex);
     procedure FormCreate(Sender: TObject);
