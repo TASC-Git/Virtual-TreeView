@@ -244,6 +244,7 @@ end;
 function TVTDragManager.DragEnter(const DataObject : IDataObject; KeyState : Integer; Pt : TPoint; var Effect : Integer) : HResult;
 var
   Medium: TStgMedium;
+  HeaderFormatEtc: TFormatEtc;
 begin
   if not Assigned(FDropTargetHelper) then
     CoCreateInstance(CLSID_DragDropHelper, nil, CLSCTX_INPROC_SERVER, IID_IDropTargetHelper, FDropTargetHelper);
@@ -258,18 +259,23 @@ begin
     LockWindowUpdate(0);
   if Assigned(FDropTargetHelper) and FFullDragging then
   begin
-    if toAutoScroll in TreeView.TreeOptions.AutoOptions then
+    if (toAutoScroll in TreeView.TreeOptions.AutoOptions) and (toAcceptOLEDrop in TreeView.TreeOptions.MiscOptions) then
       FDropTargetHelper.DragEnter(FOwner.Handle, DataObject, Pt, Effect)
     else
       FDropTargetHelper.DragEnter(0, DataObject, Pt, Effect); // Do not pass handle, otherwise the IDropTargetHelper will perform autoscroll. Issue #486
   end;
   FDragSource := GetTreeFromDataObject(DataObject);
   Result := TreeView.DragEnter(KeyState, Pt, Effect);
-  StandardOLEFormat.cfFormat := CF_VTHEADERREFERENCE;
-  if (DataObject.GetData(StandardOLEFormat, Medium) = S_OK) and (FDragSource = FOWner) then
+  HeaderFormatEtc := StandardOLEFormat;
+  HeaderFormatEtc.cfFormat := CF_VTHEADERREFERENCE;
+  if (DataObject.GetData(HeaderFormatEtc, Medium) = S_OK) and (FDragSource = FOWner) then
   begin
     FHeader := FDragSource.Header;
     FDRagSource := nil;
+  end
+  else
+  begin
+    fHeader := nil;
   end;
 end;
 
@@ -280,10 +286,12 @@ begin
   if Assigned(FDropTargetHelper) and FFullDragging then
     FDropTargetHelper.DragLeave;
 
-  TreeView.DragLeave;
+  if (toAcceptOLEDrop in TreeView.TreeOptions.MiscOptions) then
+    TreeView.DragLeave;
   FIsDropTarget := False;
   FDragSource := nil;
   FDataObject := nil;
+  fHeader := nil;
   Result := NOERROR;
 end;
 
@@ -294,12 +302,12 @@ begin
   if Assigned(FDropTargetHelper) and FFullDragging then
     FDropTargetHelper.DragOver(Pt, Effect);
 
+  Result := NOERROR;
   if Assigned(fHeader) then
   begin
     TreeView.Header.DragTo(Pt);
-    Result := NOERROR;
   end
-  else
+  else if (toAcceptOLEDrop in TreeView.TreeOptions.MiscOptions) then       
     Result := TreeView.DragOver(FDragSource, KeyState, dsDragMove, Pt, Effect);
 end;
 
