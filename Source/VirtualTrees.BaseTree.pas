@@ -326,7 +326,7 @@ type
                                           const APlusSelectedHotBM :TBitmap; const AMinusBM : TBitmap; const AMinusHotBM : TBitmap;
                                           const AMinusSelectedHotBM :TBitmap; var ASize : TSize) of object;
 
-  TVTColumnHeaderSpanningEvent = procedure(Sender: TVTHeader; Column: TColumnIndex; var Count: Cardinal) of object;
+  TVTColumnHeaderSpanningEvent = procedure(Sender: TVTHeader; Column: TColumnIndex; var Count: Integer) of object;
 
   // search, sort
   TVTCompareEvent = procedure(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex;
@@ -1064,7 +1064,7 @@ type
     procedure DoStructureChange(Node: PVirtualNode; Reason: TChangeReason); virtual;
     procedure DoTimerScroll; virtual;
     procedure DoUpdating(State: TVTUpdateState); virtual;
-    procedure DoColumnHeaderSpanning(Column: TColumnIndex; var Count: Cardinal); virtual;
+    procedure DoColumnHeaderSpanning(Column: TColumnIndex; var Count: Integer); virtual;
     function DoValidateCache: Boolean; virtual;
     procedure DragAndDrop(AllowedEffects: DWord; const DataObject: TVTDragDataObject; var DragEffect: Integer); virtual;
     procedure DragCanceled; override;
@@ -7562,7 +7562,7 @@ begin
   StopTimer(ChangeTimer);
   StopTimer(StructureChangeTimer);
 
-  if not (csDesigning in ComponentState) and (toAcceptOLEDrop in FOptions.MiscOptions) and HandleAllocated then
+  if not (csDesigning in ComponentState) and HandleAllocated then
     RevokeDragDrop(Handle);
 
   inherited;
@@ -8746,9 +8746,8 @@ begin
   PrepareBitmaps(True, True);
 
   // Register tree as OLE drop target.
-  if not (csDesigning in ComponentState) and (toAcceptOLEDrop in FOptions.MiscOptions) then
-    if not (csLoading in ComponentState) then // will be done in Loaded after all inherited settings are loaded from the DFMs
-      RegisterDragDrop(Handle, DragManager as IDropTarget);
+  if not (csDesigning in ComponentState) and not (csLoading in ComponentState) then // will be done in Loaded after all inherited settings are loaded from the DFMs
+    RegisterDragDrop(Handle, DragManager as IDropTarget);
 
   UpdateScrollBars(True);
   UpdateHeaderRect;
@@ -9693,7 +9692,7 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure TBaseVirtualTree.DoColumnHeaderSpanning(Column: TColumnIndex; var Count: Cardinal);
+procedure TBaseVirtualTree.DoColumnHeaderSpanning(Column: TColumnIndex; var Count: Integer);
 begin
   if Assigned(FOnColumnHeaderSpanning) then
     FOnColumnHeaderSpanning(Self.Header, Column, Count);
@@ -11239,6 +11238,12 @@ var
 
 begin
   try
+    if not (toAcceptOLEDrop in TreeOptions.MiscOptions) then
+    begin
+      Effect := DROPEFFECT_NONE;
+      Exit(NOERROR);
+    end;
+
     // Determine acceptance of drag operation and reset scroll start time.
     FDragScrollStart := 0;
 
@@ -12600,8 +12605,6 @@ begin
   if not FSelectionLocked and ((not (IsAnyHit or FullRowDrag) and MultiSelect and ShiftEmpty) or
     (IsAnyHit and (not NodeSelected or (NodeSelected and CanClear)) and (ShiftEmpty or not MultiSelect or (tsRightButtonDown in FStates)))) then
   begin
-    Assert(not (tsClearPending in FStates), 'Pending and direct clearance are mutual exclusive!');
-
     // If the currently hit node was already selected then we have to reselect it again after clearing the current
     // selection, but without a change event if it is the only selected node.
     // The same applies if the Alt key is pressed, which allows to start drawing the selection rectangle also
@@ -13503,9 +13506,8 @@ begin
   inherited;
 
   // Call RegisterDragDrop after all visual inheritance changes to MiscOptions have been applied.
-  if not (csDesigning in ComponentState) and (toAcceptOLEDrop in FOptions.MiscOptions) then
-    if HandleAllocated then
-      RegisterDragDrop(Handle, DragManager as IDropTarget);
+  if not (csDesigning in ComponentState) and HandleAllocated then
+    RegisterDragDrop(Handle, DragManager as IDropTarget);
 
   // If a root node count has been set during load of the tree then update its child structure now
   // as this hasn't been done yet in this case.
@@ -14851,11 +14853,11 @@ procedure TBaseVirtualTree.StartWheelPanning(Position: TPoint);
     try
       PanningImage.Handle := LoadImage(0, MAKEINTRESOURCE(ImageName), IMAGE_CURSOR, Form.Width, Form.Height, LR_DEFAULTCOLOR or LR_LOADTRANSPARENT);
       Image.Picture.Assign(PanningImage);
+      Form.Left := Pos.X - (PanningImage.Width div 2);
+      Form.Top := Pos.Y - (PanningImage.Height div 2);
     finally
       PanningImage.Free;
     end;
-    Form.Left := Pos.X - (PanningImage.Width div 2);
-    Form.Top := Pos.Y - (PanningImage.Height div 2);
     Form.Position := poDesigned;
     // This prevents a focus chnage compare to using TForm.Show()
     ShowWindow(Form.Handle, SW_SHOWNOACTIVATE);
@@ -16317,6 +16319,8 @@ var
   I: Integer;
   LevelChange: Boolean;
 begin
+  if Length(pNodes) = 0 then
+    exit; // Prevent range error below when empty array is passen. See issue #1288
   BeginUpdate;
   try
     for I := High(pNodes) downto 1 do
