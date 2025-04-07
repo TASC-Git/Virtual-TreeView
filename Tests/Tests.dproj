@@ -7,7 +7,7 @@
         <MainSource>Tests.dpr</MainSource>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <ProjectGuid>{D37CFA56-3B13-4C93-91F7-DDC227C20116}</ProjectGuid>
-        <ProjectVersion>20.2</ProjectVersion>
+        <ProjectVersion>20.3</ProjectVersion>
         <TargetedPlatforms>3</TargetedPlatforms>
         <ProjectName Condition="'$(ProjectName)'==''">Tests</ProjectName>
     </PropertyGroup>
