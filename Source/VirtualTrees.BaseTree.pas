@@ -20860,8 +20860,10 @@ begin
         SetBkMode(TargetCanvas.Handle, TRANSPARENT);
         lEmptyListTextMargin := ScaledPixels(Max(cDefaultTextMargin, Self.TextMargin) * 2); // Since the list is empty and the font is slightly larger make sure text id not too close at the edges so that it looks good.
         R.Left := OffSetX + lEmptyListTextMargin;
-        R.Top := lEmptyListTextMargin;
         R.Right := R.Left + Width - lEmptyListTextMargin;
+        // DQ make the message fit within the top 1/4
+        inc(lEmptyListTextMargin, Max(1, Height div 4));
+        R.Top := lEmptyListTextMargin;
         R.Bottom := Height - lEmptyListTextMargin;
         TargetCanvas.Font.Color := StyleServices.GetStyleFontColor(TStyleFont.sfTreeItemTextDisabled);//clGrayText;
         // DQ changed
