@@ -6498,7 +6498,7 @@ begin
   if not Assigned(PopupMenu) then begin
     // convert screen coordinates to client
     pt := ScreenToClient(Point(Message.XPos, Message.YPos));
-    GetHitTestInfoAt(Message.XPos, Message.YPos, True, HitInfo); // ShiftState is not used anyway here
+    GetHitTestInfoAt(pt.x, pt.y, True, HitInfo); // ShiftState is not used anyway here
     DoPopupMenu(HitInfo.HitNode, HitInfo.HitColumn, pt);
   end;
 
@@ -9949,6 +9949,7 @@ begin
   if Assigned(FFocusedNode) and not (vsDisabled in FFocusedNode.States) and
     not (toReadOnly in FOptions.MiscOptions) and (FEditLink = nil) then
   begin
+    InternalSetFocusedColumn(FEditColumn);
     ScrollIntoView(FFocusedNode, toCenterScrollIntoView in FOptions.SelectionOptions, not (toDisableAutoscrollOnEdit in FOptions.AutoOptions));
     FEditLink := DoCreateEditor(FFocusedNode, FEditColumn);
     if Assigned(FEditLink) then
@@ -12623,7 +12624,7 @@ begin
       if NeedChangeEvent then
       begin
         Invalidate;
-        Change(nil);
+        Change(HitInfo.HitNode);
       end;
     end
     else if (toAlwaysSelectNode in Self.TreeOptions.SelectionOptions) then
