@@ -496,6 +496,8 @@ type
     property OnDragAllowed;
     property OnDragOver;
     property OnDragDrop;
+    property OnDrawGridHLine; // DQ change
+    property OnDrawGridVLine; // DQ change
     property OnDrawHint;
     property OnDrawText;
     property OnDrawTextEx;
