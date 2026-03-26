@@ -8,10 +8,9 @@ interface
 
 uses
   Windows, SysUtils, Classes, Forms, Controls, Graphics, VirtualTrees,
-  ExtCtrls, StdCtrls, ImgList, VirtualTrees.Types,
-  VirtualTrees.BaseAncestorVCL, VirtualTrees.BaseTree,
-  VirtualTrees.AncestorVCL;
-
+  ExtCtrls, StdCtrls, ImgList, VirtualTrees.Types, VirtualTrees.BaseAncestorVCL,
+  VirtualTrees.BaseTree, VirtualTrees.AncestorVCL;
+  
 type
   TNodeForm = class(TForm)
     Panel1: TPanel;
@@ -42,7 +41,7 @@ uses
 {$R *.dfm}
 
 var
-  DemoText: array[0..290] of UnicodeString;
+  DemoText: array[0..29] of UnicodeString;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -68,7 +67,6 @@ procedure TNodeForm.FormCreate(Sender: TObject);
 
 begin
   LoadUnicodeStrings('LoremIpsum', DemoText);
-  MLTree.RootNodeCount := Length(DemoText);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -131,8 +129,8 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure TNodeForm.MLTreeMeasureItem(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-  var NodeHeight: TDimension);
+procedure TNodeForm.MLTreeMeasureItem(Sender: TBaseVirtualTree; TargetCanvas:
+    TCanvas; Node: PVirtualNode; var NodeHeight: TDimension);
 
 begin
   if Sender.MultiLine[Node] then

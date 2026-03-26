@@ -10,9 +10,10 @@ unit VisibilityDemo;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, VirtualTrees, ComCtrls, ExtCtrls, ImgList, VirtualTrees.Types,
-  VirtualTrees.BaseAncestorVCL, VirtualTrees.BaseTree, VirtualTrees.AncestorVCL;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, VirtualTrees, Vcl.ComCtrls,
+  Vcl.ExtCtrls, Vcl.ImgList, VirtualTrees.Types, VirtualTrees.BaseAncestorVCL,
+  VirtualTrees.BaseTree, VirtualTrees.AncestorVCL;
 
 type
   TVisibilityForm = class(TForm)
@@ -39,6 +40,7 @@ type
     procedure VST2Scroll(Sender: TBaseVirtualTree; DeltaX, DeltaY: TDimension);
     procedure VSTCollapsedExpanded(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VST2Change(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure VST3Change(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure Splitter2CanResize(Sender: TObject; var NewSize: Integer;
       var Accept: Boolean);
     procedure Splitter2Paint(Sender: TObject);
@@ -46,11 +48,15 @@ type
       var CellText: string);
     procedure FormShow(Sender: TObject);
     procedure FormHide(Sender: TObject);
+    procedure VST1Change(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VST3FreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VST2FreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VST1FreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+	procedure VSTChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+
   private
     FChanging: Boolean;
+    procedure ShowNode(const Source: string; Node: PVirtualNode);
     procedure HideNodes(Sender: TBaseVirtualTree; Node: PVirtualNode; Data: Pointer; var Abort: Boolean);
   end;
 
@@ -262,7 +268,14 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure TVisibilityForm.VST2Change(Sender: TBaseVirtualTree; Node: PVirtualNode);
+procedure TVisibilityForm.ShowNode(const Source: string; Node: PVirtualNode);
+begin
+  OutputDebugString(PChar(Format('%s %s Node: %p', [FormatDateTime('hh:nn:ss', Now), Source, Pointer(Node)])));
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TVisibilityForm.VSTChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 
 // Keep selected nodes in sync.
 
@@ -287,6 +300,22 @@ begin
       FChanging := False;
     end;
   end;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TVisibilityForm.VST2Change(Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+  ShowNode('VST2', Node);
+  VSTChange(Sender, Node);
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TVisibilityForm.VST3Change(Sender: TBaseVirtualTree; Node: PVirtualNode);
+begin
+  ShowNode('VST3', Node);
+  VSTChange(Sender, Node);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -337,6 +366,12 @@ procedure TVisibilityForm.FormHide(Sender: TObject);
 
 begin
   StateForm.Show;
+end;
+
+procedure TVisibilityForm.VST1Change(Sender: TBaseVirtualTree; Node:
+    PVirtualNode);
+begin
+  ShowNode('VST1', Node);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
