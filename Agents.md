@@ -44,3 +44,7 @@ Always build all relevant code after making chnages to see if everything compile
 RsVars.bat
 MsBuild.exe VirtualTreesDevelopment.groupproj
 ```
+
+## Bug fixing
+
+When fixing an issue from the issue thracker, always add a comment that explains the change and include the issue number in the comment.
