@@ -1718,7 +1718,9 @@ begin
             begin
               with TWMNCLButtonUp(Message) do
                 P := FOwner.ScreenToClient(Point(XCursor, YCursor));
-              if not fWasDoubleClick then
+              // Only handle a non-client header click if we previously got a header down event.
+              // This prevents bogus column clicks after title-bar double-click maximize.
+              if not fWasDoubleClick and (FColumns.DownIndex > NoColumn) then
                 TVirtualTreeColumnsCracker(FColumns).HandleClick(P, TMouseButton.mbLeft, True, False);
               TBaseVirtualTreeCracker(FOwner).DoHeaderMouseUp(TMouseButton.mbLeft, GetShiftState, P.X, P.Y + FHeight);
               Result := True;
