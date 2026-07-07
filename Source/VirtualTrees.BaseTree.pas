@@ -4942,6 +4942,8 @@ begin
     Value := cInitialDefaultNodeHeight;
   if FDefaultNodeHeight <> Value then
   begin
+	if (Parent <> nil) and (toAutoChangeScale in TreeOptions.AutoOptions) then
+      HandleNeeded(); // Create window handle and font proactively to prevent any unintended rescaling in AutoChnageScale(). See issue #1341
     Inc(FRoot.TotalHeight, Value - FDefaultNodeHeight);
     FRoot.SetNodeHeight(FRoot.NodeHeight + Value - FDefaultNodeHeight);
     FDefaultNodeHeight := Value;
@@ -8796,7 +8798,7 @@ end;
 procedure TBaseVirtualTree.ScaleNodeHeights(M, D: TDimension);
 var
   Run: PVirtualNode;
-  lNewNodeTotalHeight: Cardinal;
+  lNewNodeTotalHeight: TNodeHeight;
 begin
   // Scale also node heights
   BeginUpdate();
@@ -8811,7 +8813,7 @@ begin
         Run.SetNodeHeight(MulDiv(Run.NodeHeight, M, D));
         // The next three lines fix issue #1000
         lNewNodeTotalHeight := MulDiv(Run.TotalHeight, M, D);
-        FRoot.TotalHeight := Cardinal(Int64(FRoot.TotalHeight) + Int64(lNewNodeTotalHeight) - Int64(Run.TotalHeight)); // Avoiding EIntOverflow exception.
+        FRoot.TotalHeight := TNodeHeight(Int64(FRoot.TotalHeight) + Int64(lNewNodeTotalHeight) - Int64(Run.TotalHeight)); // Avoiding EIntOverflow exception.
         Run.TotalHeight := lNewNodeTotalHeight;
       end;
       Run := GetNextNoInit(Run);
@@ -12634,6 +12636,7 @@ var
   MayEdit: Boolean;
 
 begin
+  fLastHitInfo := HitInfo;
   MayEdit := not (tsEditing in FStates) and (toEditOnDblClick in FOptions.MiscOptions);
   if tsEditPending in FStates then
   begin
@@ -12648,6 +12651,9 @@ begin
 
       if HitInfo.HitNode <> nil then
         DoNodeDblClick(HitInfo);
+
+    if not Assigned (fLastHitInfo.HitNode) then
+      exit; // Double clicked node was deleted, so do not further process the node. See issue #1365
 
     Node := nil;
     if (hiOnItem in HitInfo.HitPositions) and (HitInfo.HitColumn > NoColumn) and

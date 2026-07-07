@@ -7,6 +7,7 @@
 interface
 
 uses Winapi.Windows,
+     System.NetEncoding,
      VirtualTrees,
      VirtualTrees.Classes;
 
@@ -136,6 +137,7 @@ var
   Index: Integer;
   IndentWidth,
   LineStyleText: String;
+  CellText: String;
   Alignment: TAlignment;
   BidiMode: TBidiMode;
 
@@ -436,7 +438,8 @@ begin
           lGetCellTextEventArgs.Node := Run;
           lGetCellTextEventArgs.Column := Index;
           CrackTree.DoGetText(lGetCellTextEventArgs);
-          Buffer.Add(lGetCellTextEventArgs.CellText);
+          CellText := THtmlEncoding.HTML.Encode(lGetCellTextEventArgs.CellText);
+          Buffer.Add(CellText);
           if not lGetCellTextEventArgs.StaticText.IsEmpty and (toShowStaticText in TStringTreeOptions(CrackTree.TreeOptions).StringOptions) then
             Buffer.Add(' ' + lGetCellTextEventArgs.StaticText);
           Buffer.Add('</td>');
